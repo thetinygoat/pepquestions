@@ -1,3 +1,5 @@
+import java.util.*;
+
 class dp {
     public static void main(String[] args) {
         solve();
@@ -15,7 +17,8 @@ class dp {
         // display2d(dp);
         // goldMine();
         // waysToPair();
-        nInKGroups();
+        // nInKGroups();
+        longestPalendromicSubsequenceString("BBABCBCAB");
     }
 
     public static void display1d(int[] a) {
@@ -231,5 +234,56 @@ class dp {
         int res = nInKGroups_(n, k, dp);
         display2d(dp);
         System.out.println(res);
+    }
+
+    // ================================= Strings
+    // =====================================
+
+    public static int longestPalendromicSubstring(String s) {
+        int[][] dp = new int[s.length()][s.length()];
+        int maxlen = 0;
+        for (int gap = 0; gap < s.length(); gap++) {
+            for (int si = 0, ei = gap; ei < s.length(); si++, ei++) {
+                if (gap == 0)
+                    dp[si][ei] = 1;
+                else if (gap == 1 && s.charAt(si) == s.charAt(ei))
+                    dp[si][ei] = 2;
+                else if (s.charAt(si) == s.charAt(ei) && dp[si + 1][ei - 1] != 0) {
+                    dp[si][ei] = dp[si + 1][ei - 1] + 2;
+                    maxlen = Math.max(maxlen, dp[si][ei]);
+                }
+            }
+        }
+        return maxlen;
+    }
+
+    // public static int longestPalendromicSubsequence(String s) {
+    // int dp[][] = new int[s.length()][s.length()];
+    // }
+    public static void longestPalendromicSubsequenceString(String str) {
+        StringBuilder dp[][] = new StringBuilder[str.length()][str.length()];
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                dp[i][j] = new StringBuilder("");
+            }
+        }
+        for (int gap = 0; gap < str.length(); gap++) {
+            for (int si = 0, ei = gap; ei < str.length(); ei++, si++) {
+                if (gap == 0)
+                    dp[si][ei].append(str.charAt(si));
+                else if (gap == 1 && str.charAt(si) == str.charAt(ei))
+                    dp[si][ei].append(str.substring(si, ei + 1));
+                else if (str.charAt(si) == str.charAt(ei)) {
+                    dp[si][ei].append(str.charAt(si));
+                    dp[si][ei].append(dp[si + 1][ei - 1]);
+                    dp[si][ei].append(str.charAt(ei));
+                } else {
+                    dp[si][ei].append(
+                            dp[si + 1][ei].length() >= dp[si][ei - 1].length() ? dp[si + 1][ei] : dp[si][ei - 1]);
+                }
+            }
+        }
+
+        System.out.println(dp[0][str.length() - 1].toString());
     }
 }
