@@ -12,13 +12,16 @@ class dp {
         // System.out.println(ans);
 
         int[][] maze = { { 1, 1, 1, 1 }, { 1, 1, 0, 1 }, { 0, 1, 0, 1 }, { 1, 1, 1, 1 } };
-        int[][] dp = new int[maze.length][maze[0].length];
+        int[][] dp = new int[15][15];
         // int ans = mazepath_tab(maze, maze.length - 1, maze[0].length - 1, 0, 0, dp);
         // display2d(dp);
         // goldMine();
         // waysToPair();
         // nInKGroups();
-        longestPalendromicSubsequenceString("BBABCBCAB");
+        // longestPalendromicSubsequenceString("BBABCBCAB");
+        // longestCommonSubseqRec("geeksforgeeks", "geeksquiz", 0, 0, dp);
+        longestCommonSubseqDP();
+        // display2d(dp);
     }
 
     public static void display1d(int[] a) {
@@ -285,5 +288,65 @@ class dp {
         }
 
         System.out.println(dp[0][str.length() - 1].toString());
+    }
+
+    public static int longestCommonSubseqRec(String s1, String s2, int i, int j, int[][] dp) {
+        if (i == s1.length() || j == s2.length())
+            return 0;
+        if (dp[i][j] != 0)
+            return dp[i][j];
+        if (s1.charAt(i) == s2.charAt(j))
+            return dp[i][j] = longestCommonSubseqRec(s1, s2, i + 1, j + 1, dp) + 1;
+        int l = longestCommonSubseqRec(s1, s2, i + 1, j, dp);
+        int r = longestCommonSubseqRec(s1, s2, i, j + 1, dp);
+
+        return dp[i][j] = Math.max(l, r);
+    }
+
+    public static int longestCommonSubseqDP() {
+        String s1 = "geeksforgeeks";
+        String s2 = "geeksquiz";
+        int[][] dp = new int[s1.length()][s2.length()];
+        for (int i = s1.length() - 1; i >= 0; i--) {
+            for (int j = s2.length() - 1; j >= 0; j--) {
+                if (s1.charAt(i) == s2.charAt(j))
+                    dp[i][j] = dp[i + 1][j + 1] + 1;
+                else if (s1.charAt(i) != s2.charAt(j)) {
+                    int l = dp[i + 1][j];
+                    int r = dp[i][j + 1];
+                    dp[i][j] = Math.max(l, r);
+                }
+            }
+        }
+        display2d(dp);
+        return dp[0][0];
+    }
+
+    public static int max = 0;
+
+    public static int longestCommonSubstringRec(String s1, String s2, int i, int j, int[][] dp) {
+        if (i == s1.length() || j == s2.length())
+            return 0;
+        int a = 0;
+        if (s1.charAt(i) == s2.charAt(j)) {
+            a = longestCommonSubstringRec(s1, s2, i + 1, j + 1, dp) + 1;
+            max = Math.max(a, max);
+        }
+        longestCommonSubstringRec(s1, s2, i + 1, j, dp);
+        longestCommonSubstringRec(s1, s2, i, j + 1, dp);
+        return dp[i][j] = a;
+    }
+
+    public static int longestCommonSubstringDP(String s1, String s2, int i, int j, int[][] dp) {
+        int max = 0;
+        for (i = s1.length() - 1; i >= 0; i--) {
+            for (j = s2.length() - 1; j >= 0; j--) {
+                if (s1.charAt(i) == s2.charAt(j)) {
+                    dp[i][j] = dp[i + 1][j + 1] + 1;
+                    max = Math.max(dp[i][j], max);
+                }
+            }
+        }
+        return dp[0][0];
     }
 }
