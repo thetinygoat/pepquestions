@@ -11,8 +11,9 @@ class dp {
         // int ans = fib_tabulation(7, dp);
         // System.out.println(ans);
 
-        int[][] maze = { { 1, 1, 1, 1 }, { 1, 1, 0, 1 }, { 0, 1, 0, 1 }, { 1, 1, 1, 1 } };
-        int[][] dp = new int[15][15];
+        // int[][] maze = { { 1, 1, 1, 1 }, { 1, 1, 0, 1 }, { 0, 1, 0, 1 }, { 1, 1, 1, 1
+        // } };
+        // int[][] dp = new int[15][15];
         // int ans = mazepath_tab(maze, maze.length - 1, maze[0].length - 1, 0, 0, dp);
         // display2d(dp);
         // goldMine();
@@ -20,7 +21,21 @@ class dp {
         // nInKGroups();
         // longestPalendromicSubsequenceString("BBABCBCAB");
         // longestCommonSubseqRec("geeksforgeeks", "geeksquiz", 0, 0, dp);
-        longestCommonSubseqDP();
+        // longestCommonSubseqDP();
+        // editDistance();
+        // stringAsSubsequence();
+        // coinchnagecombination();
+        int target = 100;
+        int[] values = { 1, 30 };
+        int[] weights = { 1, 50 };
+        // int[][] dp = new int[weights.length + 1][target + 1];
+        int[] dp = new int[target + 1];
+        // coinChangeDP();
+        // knapsack01Rec(weights, values, target, dp, 0);
+        // knapsack01DP(weights, values, target, dp);
+        // System.out.println(coinchangeRec(target, coins, dp, 0));
+        System.out.println(unboundedKnapsackRec(weights, values, target, 0, dp));
+        display1d(dp);
         // display2d(dp);
     }
 
@@ -349,4 +364,192 @@ class dp {
         }
         return dp[0][0];
     }
+
+    public static void editDistance() {
+        String s1 = "horse";
+        String s2 = "ros";
+
+        int[][] dp = new int[s1.length() + 1][s2.length() + 1];
+
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                if (i == 0)
+                    dp[i][j] = j;
+                else if (j == 0)
+                    dp[i][j] = i;
+                else if (s1.charAt(i - 1) == s2.charAt(j - 1))
+                    dp[i][j] = dp[i - 1][j - 1];
+                else
+                    dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i][j - 1], dp[i - 1][j])) + 1;
+            }
+        }
+
+        display2d(dp);
+
+    }
+
+    public static void stringAsSubsequence() {
+        String s1 = "geeksforgeeks";
+        String s2 = "gks";
+        int[][] dp = new int[s1.length()][s2.length()];
+        for (int i = s1.length() - 1; i >= 0; i--) {
+            for (int j = s2.length() - 1; j >= 0; j--) {
+                if (i == s1.length() - 1 && j == s2.length() - 1)
+                    dp[i][j] = 1;
+                else if (i == s1.length() - 1 && j != s2.length() - 1)
+                    dp[i][j] = 0;
+                else if (i != s1.length() - 1 && j == s2.length() - 1)
+                    dp[i][j] = 0;
+                else if (s1.charAt(i) == s2.charAt(j))
+                    dp[i][j] = dp[i + 1][j + 1] + dp[i + 1][j];
+            }
+        }
+        display2d(dp);
+    }
+
+    // ============= coin change ================
+
+    public static void coinchnageperm() {
+        int target = 10;
+        int[] coins = { 2, 3, 5, 7 };
+        int[] dp = new int[target + 1];
+        for (int i = 0; i < dp.length; i++) {
+            if (i == 0) {
+                dp[i] = 1;
+                continue;
+            }
+            for (int c = 0; c < coins.length; c++) {
+                if (i - coins[c] >= 0) {
+                    dp[i] += dp[i - coins[c]];
+                }
+            }
+        }
+
+        display1d(dp);
+    }
+
+    public static void coinchnagecombination() {
+        int target = 10;
+        int[] coins = { 2, 3, 5, 7 };
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int c = 0; c < coins.length; c++) {
+            for (int i = 0; i < dp.length; i++) {
+                if (i - coins[c] >= 0) {
+                    dp[i] += dp[i - coins[c]];
+                }
+            }
+        }
+
+        display1d(dp);
+    }
+
+    // =============== solution of linear equation
+    public static void lineareq() {
+        int tar = 10;
+        int[] coeff = { 2, 3, 5, 7 };
+        int[] dp = new int[tar + 1];
+        dp[0] = 1;
+        for (int c : coeff) {
+            for (int t = 0; t <= tar; t++) {
+                if (t - c >= 0) {
+                    dp[t] += dp[t - c];
+                }
+            }
+        }
+    }
+
+    // ==================== coin change with single usage
+
+    public static int coinchangeRec(int t, int[] coins, int[][] dp, int idx) {
+        if (t == 0 || idx == coins.length) {
+            return dp[idx][t] = t == 0 ? 1 : 0;
+        }
+
+        if (dp[idx][t] != 0)
+            return dp[idx][t];
+        int count = 0;
+        if (t - coins[idx] >= 0) {
+            count += coinchangeRec(t - coins[idx], coins, dp, idx + 1);
+        }
+        count += coinchangeRec(t, coins, dp, idx + 1);
+        return dp[idx][t] = count;
+    }
+
+    public static void coinChangeDP() {
+        int t = 10;
+        int[] coins = { 2, 3, 1, 5, 6 };
+        int[][] dp = new int[coins.length + 1][t + 1];
+        dp[0][0] = 1;
+
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 0; j <= t; j++) {
+                int count = 0;
+                if (j - coins[i - 1] >= 0) { // i-1 because we add 0 row
+                    count += dp[i - 1][j - coins[i - 1]];
+                }
+
+                count += dp[i - 1][j];
+                dp[i][j] = count;
+            }
+        }
+
+        display2d(dp);
+    }
+
+    // =============== knapsack 0-1
+
+    public static int knapsack01Rec(int[] weights, int[] values, int W, int[][] dp, int idx) {
+        if (W == 0 || idx == weights.length) {
+            return dp[idx][W] = 0;
+        }
+
+        if (dp[idx][W] != 0)
+            return dp[idx][W];
+
+        int t = 0, nt = 0;
+        if (W - weights[idx] >= 0) {
+            t = knapsack01Rec(weights, values, W - weights[idx], dp, idx + 1) + values[idx];
+        }
+        nt = knapsack01Rec(weights, values, W, dp, idx + 1);
+
+        return dp[idx][W] = Math.max(t, nt);
+    }
+
+    public static void knapsack01DP(int[] weights, int[] values, int W, int[][] dp) {
+        for (int i = dp.length - 1; i >= 0; i--) {
+            for (int j = 0; j <= W; j++) {
+                if (j == 0 || i == dp.length - 1) {
+                    dp[i][j] = 0;
+                    continue;
+                }
+
+                int t = 0, nt = 0;
+                if (j - weights[i] >= 0) {
+                    t = dp[i + 1][j - weights[i]] + values[i];
+                }
+                nt = dp[i + 1][j];
+                dp[i][j] = Math.max(t, nt);
+            }
+        }
+    }
+    // ================ unbounded knapsack
+
+    public static int unboundedKnapsackRec(int[] weights, int[] values, int W, int idx, int[] dp) {
+        if (W == 0 || idx == weights.length) {
+            return dp[idx] = 1;
+        }
+
+        if (dp[idx] != 0)
+            return dp[idx];
+        int count = 0;
+        for (int w : weights) {
+            if (W - w >= 0) {
+                count += unboundedKnapsackRec(weights, values, W - w, idx + 1, dp) + values[idx];
+            }
+        }
+
+        return dp[idx] = count;
+    }
+
 }
